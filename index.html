@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NØCTSEC PANEL</title>
+<style>
+:root{--bg:#070a0f;--panel:#0e141d;--line:#1d3440;--green:#5affbd;--text:#e6f5f1;--muted:#8da6a4}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#10232a,#070a0f 65%);color:var(--text);font-family:system-ui,Arial,sans-serif}
+header{text-align:center;padding:36px 16px 24px;border-bottom:1px solid var(--line)}
+.logo{font-size:clamp(30px,8vw,48px);font-weight:900;letter-spacing:5px;color:var(--green)}
+header p{color:var(--muted);letter-spacing:2px;font-size:12px}
+.status{display:inline-block;border:1px solid #275644;padding:6px 10px;border-radius:30px;color:var(--green);font-size:11px}
+main{max-width:950px;margin:auto;padding:22px 14px}
+h2{font-size:16px;letter-spacing:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.card,.panel{background:linear-gradient(145deg,#111a24,#0b1017);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card{cursor:pointer;transition:.2s}
+.card:hover{border-color:var(--green);transform:translateY(-2px)}
+.num{color:var(--green);font-size:12px}
+.card h3{font-size:14px;margin:10px 0 5px}
+.card p{font-size:12px;color:var(--muted);margin:0}
+.panel{margin-top:20px}
+input,button{font:inherit;border-radius:7px;padding:12px;width:100%;margin-top:9px}
+input{background:#080d13;border:1px solid var(--line);color:white}
+button{background:var(--green);border:0;color:#06110d;font-weight:800;cursor:pointer}
+.result{white-space:pre-wrap;overflow-wrap:anywhere;background:#070b10;border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px;color:var(--green);font-size:13px;min-height:45px}
+small,footer{color:var(--muted)}
+footer{text-align:center;padding:30px 12px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">NØCTSEC</div>
+<p>CYBER TOOLS PANEL</p>
+<span class="status">● INTERFACE EN LIGNE</span>
+</header>
+<main>
+<h2>/// OUTILS DISPONIBLES</h2>
+<div class="grid">
+<div class="card" onclick="showTool('ip')"><span class="num">01 / NETWORK</span><h3>IP LOOKUP</h3><p>Informations publiques sur une IP</p></div>
+<div class="card" onclick="showTool('vpn')"><span class="num">02 / NETWORK</span><h3>VPN CHECK</h3><p>Vérification de démonstration</p></div>
+<div class="card" onclick="showTool('email')"><span class="num">03 / OSINT</span><h3>EMAIL LOOKUP</h3><p>Vérification du format d'un email</p></div>
+<div class="card" onclick="showTool('pass')"><span class="num">04 / SECURITY</span><h3>PASSWORD LAB</h3><p>Générateur de mots de passe</p></div>
+<div class="card" onclick="showTool('snap')"><span class="num">05 / OSINT</span><h3>SNAP PUBLIC</h3><p>Recherche de profil public</p></div>
+<div class="card" onclick="showTool('term')"><span class="num">06 / SYSTEM</span><h3>TERMINAL</h3><p>Terminal de simulation</p></div>
+</div>
+<section class="panel">
+<h2 id="toolTitle">/// CONSOLE</h2>
+<p id="toolDesc"><small>Sélectionne un outil ci-dessus pour commencer.</small></p>
+<div id="toolForm"></div>
+<div class="result" id="result">NØCTSEC PANEL — prêt.</div>
+</section>
+<section class="panel">
+<h2>/// À PROPOS</h2>
+<p><small>Interface éducative de cybersécurité. Les outils simulés ne prétendent pas accéder à des comptes privés ni effectuer des attaques réseau.</small></p>
+</section>
+</main>
+<footer>Développé par ROOT SHADOW · NØCTSEC © 2026</footer>
+<script>
+const $=id=>document.getElementById(id);
+function showTool(type){
+const tools={
+ip:{title:"IP LOOKUP",desc:"Entre une adresse IP publique pour consulter ses informations publiques.",placeholder:"Ex. 8.8.8.8",button:"RECHERCHER",action:"ip"},
+vpn:{title:"VPN CHECK",desc:"Démo locale : aucun test réseau réel n'est effectué.",placeholder:"Nom du VPN (facultatif)",button:"LANCER LA DÉMO",action:"vpn"},
+email:{title:"EMAIL LOOKUP",desc:"Vérifie le format d'une adresse email, sans rechercher de données privées.",placeholder:"nom@exemple.com",button:"VÉRIFIER",action:"email"},
+pass:{title:"PASSWORD LAB",desc:"Génère un mot de passe aléatoire dans ton navigateur.",placeholder:"Longueur entre 8 et 64",button:"GÉNÉRER",action:"pass"},
+snap:{title:"SNAP PUBLIC",desc:"Ouvre une recherche web pour un profil public. Aucun accès privé.",placeholder:"Pseudo public",button:"RECHERCHER SUR LE WEB",action:"snap"},
+term:{title:"TERMINAL SIMULÉ",desc:"Commandes de démonstration : help, status, scan-demo, clear.",placeholder:"Tape help",button:"EXÉCUTER",action:"term"}
+};
+const t=tools[type];$("toolTitle").textContent="/// "+t.title;$("toolDesc").textContent=t.desc;
+$("toolForm").innerHTML='<input id="toolInput" placeholder="'+t.placeholder+'" autocomplete="off"><button id="runBtn">'+t.button+'</button>';
+$("runBtn").onclick=()=>runTool(t.action,$("toolInput").value.trim());
+$("result").textContent="En attente d'une commande...";
+}
+async function runTool(type,value){
+if(type==="ip"){
+if(!value){$("result").textContent="Entre une adresse IP.";return}
+if(!/^[0-9a-fA-F:.]+$/.test(value)){$("result").textContent="Format d'adresse IP invalide.";return}
+$("result").textContent="Recherche des informations publiques...";
+try{
+const r=await fetch("https://ipwho.is/"+encodeURIComponent(value));
+const d=await r.json();
+if(!d.success)throw Error("Adresse non trouvée");
+$("result").textContent="IP : "+d.ip+"\nPays : "+d.country+"\nRégion : "+d.region+"\nVille : "+d.city+"\nFournisseur : "+d.connection?.isp+"\nOrganisation : "+d.connection?.org+"\nNote : localisation approximative.";
+}catch(e){$("result").textContent="Impossible de récupérer les données. Vérifie l'adresse ou réessaie."}
+}else if(type==="vpn"){
+$("result").textContent="MODE DÉMO\nAucun VPN n'a été détecté ni testé par cet outil.";
+}else if(type==="email"){
+$("result").textContent=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)?"Format email valide. Cela ne confirme pas que la boîte existe.":"Format email invalide.";
+}else if(type==="pass"){
+const n=Number(value||16);
+if(!Number.isInteger(n)||n<8||n>64){$("result").textContent="Choisis un nombre entier entre 8 et 64.";return}
+const chars="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*";
+let out="";
+const bytes=new Uint32Array(n);crypto.getRandomValues(bytes);
+for(let i=0;i<n;i++)out+=chars[bytes[i]%chars.length];
+$("result").textContent="Mot de passe généré :\n"+out;
+}else if(type==="snap"){
+if(!value){$("result").textContent="Entre un pseudo public.";return}
+$("result").textContent="Ouverture d'une recherche web publique...";
+window.open("https://www.google.com/search?q="+encodeURIComponent(value+" Snapchat profil public"),"_blank");
+}else if(type==="term"){
+const cmd=value.toLowerCase();
+if(cmd==="help")$("result").textContent="Commandes : help, status, scan-demo, clear";
+else if(cmd==="status")$("result").textContent="NØCTSEC DEMO : interface active.";
+else if(cmd==="scan-demo")$("result").textContent="[SIMULATION] Vérification locale terminée. Aucun scan réseau réel.";
+else if(cmd==="clear")$("result").textContent="";
+else $("result").textContent="Commande inconnue. Tape help.";
+}
+}
+</script>
+</body>
+</html>
